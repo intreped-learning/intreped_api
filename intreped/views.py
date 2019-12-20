@@ -1,10 +1,23 @@
-from django.http import HttpResponse
-from django.shortcuts import render
+# from django.http import HttpResponse
+# from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Teacher
-from .serializers import TeacherSerializer
+from .mixins import ReadWriteSerializerMixin
+from .models import Teacher, Course, TeacherCourse
+from .serializers import (TeacherReadSerializer, TeacherWriteSerializer,
+                          CourseSerializer, TeacherCourseSerializer)
 
 
-class TeacherView(viewsets.ModelViewSet):
+class CourseView(viewsets.ModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+
+class TeacherView(ReadWriteSerializerMixin, viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
-    serializer_class = TeacherSerializer
+    read_serializer_class = TeacherReadSerializer
+    write_serializer_class = TeacherWriteSerializer
+
+
+class TeacherCourseView(viewsets.ModelViewSet):
+    queryset = TeacherCourse.objects.all()
+    serializer_class = TeacherCourseSerializer
