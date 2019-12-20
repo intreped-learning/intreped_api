@@ -10,12 +10,17 @@ class Course(models.Model):
     duration = models.CharField(max_length=20)
 
 
+class Badge(models.Model):
+    category = models.CharField(max_length=50)
+
+
 class Teacher(models.Model):
     name = models.CharField(max_length=50)
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=20)
     email = models.CharField(max_length=50)
     courses = models.ManyToManyField(Course, through='TeacherCourse')
+    badges = models.ManyToManyField(Badge, through='TeacherBadge')
 
 
 class TeacherCourse(models.Model):
@@ -25,3 +30,9 @@ class TeacherCourse(models.Model):
     is_favorite = models.BooleanField(default=False)
     is_complete = models.BooleanField(default=False)
     is_in_progress = models.BooleanField(default=False)
+
+
+class TeacherBadge(models.Model):
+    teacher_id = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    badge_id = models.ForeignKey(Badge, on_delete=models.CASCADE)
+    cumulative_time = models.CharField(max_length=10)
