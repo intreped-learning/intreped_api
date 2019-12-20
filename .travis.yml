@@ -1,23 +1,27 @@
 language: python
-
 python:
-  - 3.8.0
-
+- 3.8.0
 services: postgresql
-
 env:
-  - DJANGO=3.0 DB=postgres
-
+- DJANGO=3.0 DB=postgres
 before_install:
-  - export DJANGO_SETTINGS_MODULE=intreped.settings
-
+- export DJANGO_SETTINGS_MODULE=intreped.settings
 install:
-  - pip install -r requirements.txt
-  - pip install django==$DJANGO --quiet
-  - pip install psycopg2 --quiet
-
+- pip install -r requirements.txt
+- pip install django==$DJANGO --quiet
+- pip install psycopg2 --quiet
 before_script:
-  - psql -c "CREATE DATABASE intreped;" -U postgres
-
+- psql -c "CREATE DATABASE intreped;" -U postgres
+deploy:
+  provider: heroku
+  api_key:
+    secure: RfgCrzs8inDZp+I67axNglxisKlpvk2b71mWN48UZD1UKXQ1yHYq0cvRKjXKo2Bqgy0/2zUs2/ktIou0JrPOXC8bS8FwGy8J7hhmtUBBIVYqpEmNcuGIUmlw6HkONxh9yXhf6xKKCBwOs666ysR5gFlppnD1I1CT/+IPi4UPAeIv4/eqBgbBai7FOJfmK6TXXsxOgpA/v/vpGzf/NUvxblGPUeGmlZwISpkwcrg0rlzmjgjboPdRBtDmTpw0H/mWTWPc+gbCZE77caBljvVXx+U+UgAW76nWRpdPSbdQQ2ZDO/tOugb+17djwwYbv08BqY5g1QDqT0Ga0Rk5Iq2y90kDMbIjJzfHQZdRzc6LMCDYX+d4UG3J2Bw4aq1lS/G6Gw/EwAFw38BglFrHLONp/8oT6dqH7WIzAS7dsHivPygsThuaBr5Jm98LGfE+RMNE+ngdLxBTAtroTmfxbuljZJCYWikKSNUNfdI7j+sJe4N8PEokYZ/0plQQzIa/Mi/e5xOHuRNE7X0L0XDCVexMK/4whnPZTZ2ZEQq93X38rSxWgu4PZ4ebzECIqlGbpaiV/AWFY3Aba13GHu2mLLr1I2jPxjP585AmSQ5xRjlZDW0b509R12F4gu5d/2sy6L19lMtWdbyur3HC3EskuJrgJkqDpcSjYDGjGT8nnPZjFGc=
+  app: intreped
+  skip_cleanup: true
+  on:
+    repo: intreped-learning/intreped_api
+    branch: auto-deploy
+  run:
+  - python3 manage.py migrate
 script:
-  - python3 manage.py test intreped
+- python3 manage.py test intreped
