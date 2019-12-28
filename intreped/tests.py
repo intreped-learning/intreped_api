@@ -251,3 +251,74 @@ class TeacherCourseTestCase(APITestCase):
         response = self.client.delete(f'/teacher_courses/{teacher_course_id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(TeacherCourse.objects.count(), 0)
+
+
+class TeacherBadgeTestCase(APITestCase):
+
+    def setUp(self):
+        Teacher.objects.create(name='Mr. Apple', username='apple123',
+                               password='password', email='apple@email.com')
+        Teacher.objects.create(name='Jason Bourne', username='TopAssassin',
+                               password='rememberEverything', email='jason@email.com')
+        Badge.objects.create(category='Classroom Management')
+        teacher = Teacher.objects.get(name='Jason Bourne')
+        badge = Badge.objects.get(category='Classroom Management')
+        TeacherBadge.objects.create(teacher_id=teacher, badge_id=badge,
+                                    cumulative_time='5m16s')
+
+    def test_create_a_teacher_badge(self):
+        teacher_id = Teacher.objects.get(name='Mr. Apple').id
+        badge_id = Badge.objects.get(category='Classroom Management').id
+        data = {'teacher_id': f'{teacher_id}', 'badge_id': f'{badge_id}',
+                'cumulative_time': '6m17s'}
+        response = self.client.post('/teacher_badges/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(TeacherBadge.objects.count(), 2)
+        self.assertEqual(response.data['teacher_id'], teacher_id)
+        self.assertEqual(response.data['badge_id'], badge_id)
+        self.assertEqual(response.data['cumulative_time'], '6m17s')
+
+    def test_get_a_teacher_badge(self):
+        teacher_id = Teacher.objects.get(name='Jason Bourne').id
+        badge_id = Badge.objects.get(category='Classroom Management').id
+        teacher_badge_id = TeacherBadge.objects.get(teacher_id=teacher_id,
+                                                    badge_id=badge_id).id
+        response = self.client.get(f'/teacher_badges/{teacher_badge_id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['teacher_id'], teacher_id)
+        self.assertEqual(response.data['badge_id'], badge_id)
+        self.assertEqual(response.data['cumulative_time'], '5m16s')
+
+    def test_get_all_teacher_badges(self):
+        teacher_id = Teacher.objects.get(name='Mr. Apple').id
+        badge_id = Badge.objects.get(category='Classroom Management').id
+        data = {'teacher_id': f'{teacher_id}', 'badge_id': f'{badge_id}',
+                'cumulative_time': '6m17s'}
+        self.client.post('/teacher_badges/', data)
+        response = self.client.get('/teacher_badges/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[1]['teacher_id'], teacher_id)
+        self.assertEqual(response.data[1]['badge_id'], badge_id)
+        self.assertEqual(response.data[1]['cumulative_time'], '6m17s')
+
+    def test_update_a_teacher_badge(self):
+        teacher_id = Teacher.objects.get(name='Jason Bourne').id
+        badge_id = Badge.objects.get(category='Classroom Management').id
+        teacher_badge_id = TeacherBadge.objects.get(teacher_id=teacher_id,
+                                                    badge_id=badge_id).id
+        data = {'cumulative_time': '10m37s'}
+        response = self.client.patch(f'/teacher_badges/{teacher_badge_id}/', data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['teacher_id'], teacher_id)
+        self.assertEqual(response.data['badge_id'], badge_id)
+        self.assertEqual(response.data['cumulative_time'], '10m37s')
+
+    def test_delete_a_teacher_badge(self):
+        teacher_id = Teacher.objects.get(name='Jason Bourne').id
+        badge_id = Badge.objects.get(category='Classroom Management').id
+        teacher_badge_id = TeacherBadge.objects.get(teacher_id=teacher_id,
+                                                    badge_id=badge_id).id
+        response = self.client.delete(f'/teacher_badges/{teacher_badge_id}/')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(TeacherBadge.objects.count(), 0)
