@@ -164,3 +164,90 @@ class BadgeTestCase(APITestCase):
         response = self.client.delete(f'/badges/{badge_id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Badge.objects.count(), 0)
+
+
+class TeacherCourseTestCase(APITestCase):
+
+    def setUp(self):
+        Teacher.objects.create(name='Mr. Apple', username='apple123',
+                               password='password', email='apple@email.com')
+        Teacher.objects.create(name='Jason Bourne', username='TopAssassin',
+                               password='rememberEverything', email='jason@email.com')
+        Course.objects.create(title='Learn This', description='This is important',
+                              url='fakeurl.com', category='Important',
+                              thumbnail='fakethumbnail.jpg', duration='4m25s')
+        teacher = Teacher.objects.get(name='Jason Bourne')
+        course = Course.objects.get(title='Learn This')
+        TeacherCourse.objects.create(teacher_id=teacher, course_id=course,
+                                     current_time_marker='0s')
+
+    def test_create_a_teacher_course(self):
+        teacher_id = Teacher.objects.get(name='Mr. Apple').id
+        course_id = Course.objects.get(title='Learn This').id
+        data = {'teacher_id': f'{teacher_id}', 'course_id': f'{course_id}',
+                'current_time_marker': '0s', 'is_favorite': 'true',
+                'is_complete': 'false', 'is_in_progess': 'false'}
+        response = self.client.post('/teacher_courses/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(TeacherCourse.objects.count(), 2)
+        self.assertEqual(response.data['teacher_id'], teacher_id)
+        self.assertEqual(response.data['course_id'], course_id)
+        self.assertEqual(response.data['current_time_marker'], '0s')
+        self.assertEqual(response.data['is_favorite'], True)
+        self.assertEqual(response.data['is_complete'], False)
+        self.assertEqual(response.data['is_in_progress'], False)
+
+    def test_get_a_teacher_course(self):
+        teacher_id = Teacher.objects.get(name='Jason Bourne').id
+        course_id = Course.objects.get(title='Learn This').id
+        teacher_course_id = TeacherCourse.objects.get(teacher_id=teacher_id,
+                                                      course_id=course_id).id
+        response = self.client.get(f'/teacher_courses/{teacher_course_id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['teacher_id'], teacher_id)
+        self.assertEqual(response.data['course_id'], course_id)
+        self.assertEqual(response.data['current_time_marker'], '0s')
+        self.assertEqual(response.data['is_favorite'], False)
+        self.assertEqual(response.data['is_complete'], False)
+        self.assertEqual(response.data['is_in_progress'], False)
+
+    def test_get_all_teacher_courses(self):
+        teacher_id = Teacher.objects.get(name='Mr. Apple').id
+        course_id = Course.objects.get(title='Learn This').id
+        data = {'teacher_id': f'{teacher_id}', 'course_id': f'{course_id}',
+                'current_time_marker': '0s', 'is_favorite': 'true',
+                'is_complete': 'false', 'is_in_progess': 'false'}
+        self.client.post('/teacher_courses/', data)
+        response = self.client.get('/teacher_courses/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[1]['teacher_id'], teacher_id)
+        self.assertEqual(response.data[1]['course_id'], course_id)
+        self.assertEqual(response.data[1]['current_time_marker'], '0s')
+        self.assertEqual(response.data[1]['is_favorite'], True)
+        self.assertEqual(response.data[1]['is_complete'], False)
+        self.assertEqual(response.data[1]['is_in_progress'], False)
+
+    def test_update_a_teacher_course(self):
+        teacher_id = Teacher.objects.get(name='Jason Bourne').id
+        course_id = Course.objects.get(title='Learn This').id
+        teacher_course_id = TeacherCourse.objects.get(teacher_id=teacher_id,
+                                                      course_id=course_id).id
+        data = {'current_time_marker': '2m12s', 'is_in_progress': 'true'}
+        response = self.client.patch(f'/teacher_courses/{teacher_course_id}/', data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['teacher_id'], teacher_id)
+        self.assertEqual(response.data['course_id'], course_id)
+        self.assertEqual(response.data['current_time_marker'], '2m12s')
+        self.assertEqual(response.data['is_favorite'], False)
+        self.assertEqual(response.data['is_complete'], False)
+        self.assertEqual(response.data['is_in_progress'], True)
+
+    def test_delete_a_teacher_course(self):
+        teacher_id = Teacher.objects.get(name='Jason Bourne').id
+        course_id = Course.objects.get(title='Learn This').id
+        teacher_course_id = TeacherCourse.objects.get(teacher_id=teacher_id,
+                                                      course_id=course_id).id
+        response = self.client.delete(f'/teacher_courses/{teacher_course_id}/')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(TeacherCourse.objects.count(), 0)
