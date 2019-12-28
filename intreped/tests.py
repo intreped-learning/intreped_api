@@ -126,3 +126,41 @@ class CourseTestCase(APITestCase):
         response = self.client.delete(f'/courses/{course_id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Course.objects.count(), 0)
+
+
+class BadgeTestCase(APITestCase):
+
+    def setUp(self):
+        Badge.objects.create(category='Classroom Management')
+
+    def test_create_a_badge(self):
+        data = {'category': 'Engagement Strategies'}
+        response = self.client.post('/badges/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Badge.objects.count(), 2)
+        self.assertEqual(response.data['category'], 'Engagement Strategies')
+
+    def test_get_a_badge(self):
+        badge_id = Badge.objects.get(category='Classroom Management').id
+        response = self.client.get(f'/badges/{badge_id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['category'], 'Classroom Management')
+
+    def test_get_all_badges(self):
+        data = {'category': 'Engagement Strategies'}
+        self.client.post('/badges/', data)
+        response = self.client.get('/badges/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['category'], 'Classroom Management')
+
+    def test_update_a_badge(self):
+        badge_id = Badge.objects.get(category='Classroom Management').id
+        response = self.client.patch(f'/badges/{badge_id}/', {'category': 'Behavior Management'})
+        self.assertEqual(response.data['category'], 'Behavior Management')
+
+    def test_delete_a_badge(self):
+        badge_id = Badge.objects.get(category='Classroom Management').id
+        response = self.client.delete(f'/badges/{badge_id}/')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Badge.objects.count(), 0)
