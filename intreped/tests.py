@@ -1,9 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from .models import Teacher, Course, Badge, TeacherCourse, TeacherBadge
-from .serializers import (TeacherReadSerializer, TeacherWriteSerializer,
-                          CourseSerializer, TeacherCourseSerializer,
-                          BadgeSerializer, TeacherBadgeSerializer)
 
 
 class TeacherTestCase(APITestCase):
