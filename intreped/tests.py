@@ -62,3 +62,67 @@ class TeacherTestCase(APITestCase):
         response = self.client.delete(f'/teachers/{teacher_id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Teacher.objects.count(), 0)
+
+
+class CourseTestCase(APITestCase):
+
+    def setUp(self):
+        Course.objects.create(title='Learn This', description='This is important',
+                              url='fakeurl.com', category='Important',
+                              thumbnail='fakethumbnail.jpg', duration='4m25s')
+
+    def test_create_a_course(self):
+        data = {'title': 'Teach', 'description': 'How to teach',
+                'url': 'randomurl.com', 'category': 'Teaching',
+                'thumbnail': 'random.jpg', 'duration': '6m12s'}
+        response = self.client.post('/courses/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Course.objects.count(), 2)
+        self.assertEqual(response.data['title'], 'Teach')
+        self.assertEqual(response.data['description'], 'How to teach')
+        self.assertEqual(response.data['url'], 'randomurl.com')
+        self.assertEqual(response.data['category'], 'Teaching')
+        self.assertEqual(response.data['thumbnail'], 'random.jpg')
+        self.assertEqual(response.data['duration'], '6m12s')
+
+    def test_get_a_course(self):
+        course_id = Course.objects.get(title='Learn This').id
+        response = self.client.get(f'/courses/{course_id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['title'], 'Learn This')
+        self.assertEqual(response.data['description'], 'This is important')
+        self.assertEqual(response.data['url'], 'fakeurl.com')
+        self.assertEqual(response.data['category'], 'Important')
+        self.assertEqual(response.data['thumbnail'], 'fakethumbnail.jpg')
+        self.assertEqual(response.data['duration'], '4m25s')
+
+    def test_get_all_courses(self):
+        data = {'title': 'Teach', 'description': 'How to teach',
+                'url': 'randomurl.com', 'category': 'Teaching',
+                'thumbnail': 'random.jpg', 'duration': '6m12s'}
+        self.client.post('/courses/', data)
+        response = self.client.get('/courses/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['title'], 'Learn This')
+        self.assertEqual(response.data[0]['description'], 'This is important')
+        self.assertEqual(response.data[0]['url'], 'fakeurl.com')
+        self.assertEqual(response.data[0]['category'], 'Important')
+        self.assertEqual(response.data[0]['thumbnail'], 'fakethumbnail.jpg')
+        self.assertEqual(response.data[0]['duration'], '4m25s')
+
+    def test_update_a_course(self):
+        course_id = Course.objects.get(title='Learn This').id
+        response = self.client.patch(f'/courses/{course_id}/', {'title': 'Do This NOW'})
+        self.assertEqual(response.data['title'], 'Do This NOW')
+        self.assertEqual(response.data['description'], 'This is important')
+        self.assertEqual(response.data['url'], 'fakeurl.com')
+        self.assertEqual(response.data['category'], 'Important')
+        self.assertEqual(response.data['thumbnail'], 'fakethumbnail.jpg')
+        self.assertEqual(response.data['duration'], '4m25s')
+
+    def test_delete_a_course(self):
+        course_id = Course.objects.get(title='Learn This').id
+        response = self.client.delete(f'/courses/{course_id}/')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Course.objects.count(), 0)
