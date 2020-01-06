@@ -1,0 +1,13 @@
+[{
+    "model": "intreped.teacher",
+    "pk": 1,
+    "fields": {
+      "name": "Mr. George Feeny",
+      "username": "feeny_meets_world",
+      "password": "classdismissed",
+      "email": "mr.feeny@world.com",
+      "courses": [],
+      "badges": []
+    }
+  }
+]
