@@ -2,8 +2,8 @@ from django.db import models
 
 
 class Course(models.Model):
-    title = models.CharField(max_length=50)
-    description = models.CharField(max_length=300)
+    title = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000)
     url = models.CharField(max_length=300)
     category = models.CharField(max_length=50)
     thumbnail = models.CharField(max_length=300)
