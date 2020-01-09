@@ -255,7 +255,7 @@
     "model": "intreped.course",
     "pk": 22,
     "fields": {
-      "title": "Data-Driven Instruction: Dr. Robert J. Marzano",
+      "title": "Data-Driven Instruction 2: Dr. Robert J. Marzano",
       "description": "Data-Driven Instruction explained by renown educator Dr. Marzano.",
       "url": "https://www.youtube.com/watch?v=-vAbYyJxTFk",
       "thumbnail": "https://i.ytimg.com/vi/-vAbYyJxTFk/mqdefault.jpg",
