@@ -7,6 +7,9 @@ providing endpoints with CRUD functionality and database storage for the necessa
 
 Visit IntrepEd API [here](http://intreped-api.herokuapp.com/).
 
+## Project Work Board
+- [Github Project Board](https://github.com/orgs/intreped-learning/projects/1)
+
 ## Primary Tech Stack
 - Python 3.8.0
 - Django 3.0
