@@ -1,7 +1,5 @@
 # IntrepEd API
 
-![IntrepEd API](https://user-images.githubusercontent.com/48742436/71945994-9517d580-3185-11ea-85d9-e6e4ab75c23b.png)
-
 IntrepEd API provides the backend structure for [IntrepEd](https://github.com/intreped-learning/intreped-fe) by 
 providing endpoints with CRUD functionality and database storage for the necessary educational resources.
 
